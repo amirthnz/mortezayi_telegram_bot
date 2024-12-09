@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %} دسته بندی ها {% endblock %}
+
+{% block content %}
+
+    <p class="m-3"><a class="mb-3" href="{% url 'shop:cat_add' %}">افزودن دسته بندی جدید</a></p>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>عنوان</th>
+                <th>عملیات</th>
+                <th>حذف</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+                <tr>
+                    <td>{{ category.title }}</td>
+                    <td><a href="{% url 'shop:cat_edit' category.id %}" class="btn btn-warning btn-sm">ویرایش</a></td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-btn" data-id="{{ category.id }}" data-bs-toggle="modal" data-bs-target="#deleteModal">حذف</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">حذف دسته بندی</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>آیا از حذف این دسته بندی اطمینان دارید؟</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <form id="deleteForm" action="" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">حذف</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            const deleteForm = document.getElementById('deleteForm');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const categoryId = this.getAttribute('data-id');
+                    deleteForm.action = "{% url 'shop:cat_delete' 'id' %}".replace('id', categoryId);
+                });
+            });
+        });
+    </script>
+{% endblock %}

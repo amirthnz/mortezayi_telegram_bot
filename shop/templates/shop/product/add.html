@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %} افزودن محصول {% endblock %}
+
+{% block content %}
+
+    <form action="" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        <div class="row mb-3">
+            <div class="col-md-3">  <!-- First column for title -->
+                <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_title">عنوان:</label>
+                {{ form.title }}
+
+                <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_category">دسته بندی:</label>
+                {{ form.category }}
+            </div>
+            <div class="col-md-9">  <!-- Second column for description -->
+                <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_description">توضیحات:</label>
+                {{ form.description }}
+            </div>
+        </div>
+
+        <hr>
+        <div class="row mb-3">
+
+            <div class="col-md-3">  <!-- First column for title -->
+                <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_downloadable">محصول دانلودی:</label>
+                {{ form.downloadable }}
+            </div>
+
+            <div class="col-md-3">  <!-- Second column for description -->
+                <div id="stock-field">
+                    <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_stock">موجودی:</label>
+                    {{ form.stock }}
+                </div>
+            </div>
+
+
+            <div class="col-md-3">  <!-- Second column for description -->
+                <div id="file-field">
+                    <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_stock">فایل دانلود محصول:</label>
+                    {{ form.product_file }}<br>
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <hr>
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_stock">قیمت محصول (تومان):</label>
+            {{ form.price }}
+        </div>
+
+        <hr>
+
+
+
+        <h3>افزودن گالری عکس</h3>
+        <div class="row">
+            {% for form in image_forms %}
+                <div class="col-md-6 mb-3">  <!-- Use col-md-6 for two columns on medium and larger screens -->
+                    {{ form.image.label }}: {{ form.image }}
+                </div>
+            {% endfor %}
+        </div>
+
+
+        <div class="row g-3 mb-3">
+            <div class="col-auto">
+                <button class="btn btn-primary" type="submit">ذخیره</button>
+            </div>
+            <div class="col-auto">
+              <a href="{% url 'shop:product_list' %}" class="btn btn-outline-danger">انصراف</a>
+            </div>
+        </div>
+
+    </form>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const downloadableCheckbox = document.querySelector('#id_downloadable');
+        const stockField = document.getElementById('stock-field');
+        const fileUpField = document.getElementById('file-field');
+
+        function toggleStockField() {
+            if (downloadableCheckbox.checked) {
+                stockField.style.display = 'none';
+                fileUpField.style.display = 'none';
+            } else {
+                stockField.style.display = 'block';
+                fileUpField.style.display = 'block';
+            }
+        }
+
+        // Initial check
+        toggleStockField();
+
+        // Add event listener to the checkbox
+        downloadableCheckbox.addEventListener('change', toggleStockField);
+    });
+</script>
+
+{% endblock %}

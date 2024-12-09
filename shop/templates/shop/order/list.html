@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}سفارشات{% endblock %}
+
+{% block content %}
+
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>شماره</th>
+                <th>نام مشتری</th>
+                <th>تعداد محصولات</th>
+                <th>وضعیت</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td style="width: 80px">#{{order.id}}</td>
+                    <td><a href="{% url 'shop:order_detail' order.id %}">{{ order.customer.first_name }} {% if order.customer.last_name %} {{ order.customer.last_name }} {% endif %}</a></td>
+                    <td>{{ order.items.count }}</td>
+                    <td>
+                        <a href="{% url 'shop:order_detail' order.id %}"
+                            class="btn btn-sm {% if order.status == 'complete' %}
+                                    btn-success
+                                {% elif order.status == 'pending' %}
+                                    btn-warning
+                                {% elif order.status == 'wait_for_pay' %}
+                                    btn-warning
+                                {% elif order.status == 'wait_for_review' %}
+                                    btn-warning
+                                {% else %}
+                                    btn-danger
+                                {% endif %}"
+                        >
+                            {% if order.status == 'complete' %}
+                                تکمیل شده
+                            {% elif order.status == 'pending' %}
+                                انتظار
+                            {% elif order.status == 'wait_for_pay' %}
+                                پرداخت نشده
+                            {% elif order.status == 'wait_for_review' %}
+                                در انتظار تایید پرداخت
+                            {% else %}
+                                وضعیت نامشخص
+                            {% endif %}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    // JavaScript to handle the status change modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusChangeButtons = document.querySelectorAll('.change-status-btn');
+
+        // Function to set button class based on status
+        function setButtonClass(button) {
+            const status = button.getAttribute('data-status');
+            const statusChangeButton = document.getElementById('statusChangeButton');
+
+            if (status === 'complete') {
+                button.classList.remove('btn-warning');
+                button.classList.add('btn-success');
+            } else {
+                button.classList.remove('btn-success');
+                button.classList.add('btn-warning');
+            }
+        }
+
+        // Set button classes on page load
+        statusChangeButtons.forEach(button => {
+            setButtonClass(button);
+        });
+
+        statusChangeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const orderId = this.getAttribute('data-order-id');
+                document.getElementById('order-id').value = orderId;
+
+                // Reset button class to warning when modal opens
+                const statusChangeButton = document.getElementById('statusChangeButton');
+                statusChangeButton.classList.remove('btn-success');
+                statusChangeButton.classList.add('btn-warning');
+
+                // Reset the dropdown to its default value (optional)
+                const statusSelect = document.getElementById('status');
+                statusSelect.value = 'pending'; // Set to default if needed
+            });
+        });
+
+        // Ensure that the status select is available
+        const statusSelect = document.getElementById('status');
+
+        // Add event listener to the status select only if it exists
+        if (statusSelect) {
+            statusSelect.addEventListener('change', function() {
+                const statusChangeButton = document.getElementById('statusChangeButton');
+                if (this.value === 'complete') {
+                    statusChangeButton.classList.remove('btn-warning');
+                    statusChangeButton.classList.add('btn-success');
+                } else {
+                    statusChangeButton.classList.remove('btn-success');
+                    statusChangeButton.classList.add('btn-warning');
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}داشبورد{% endblock %}
+
+{% block content %}
+  <div class="p-5">
+    <h1>داشبورد</h1>
+    <hr>
+    <p>
+      <a href="{% url 'edit' %}">ویرایش حساب کاربری</a> یا <a href="{% url 'password_change' %}">تغییر رمز عبور</a>
+    </p>
+    <p>
+      <a href="{% url 'register' %}">افزودن ادمین</a>
+    </p>
+
+    {% if not bot %}
+      <p class="p-5 font-bold">برای استفاده از پنل اطلاعات ربات را <a class="text-link" href="{% url 'add_bot' %}">اضافه</a> کنید</p>
+    {% endif %}
+
+
+  </div>
+
+
+
+{% endblock %}

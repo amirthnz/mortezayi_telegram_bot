@@ -1,0 +1,13 @@
+@font-face {
+  font-family: 'yekan';
+
+  src: url('../fonts/yekan-regular.woff') format('woff');
+}
+
+html, body {
+  font-family: yekan, sans-serif !important;
+}
+
+.card {
+  margin: 20px;
+}

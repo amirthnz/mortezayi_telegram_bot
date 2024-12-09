@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %} محصولات {% endblock %}
+
+{% block content %}
+
+    <p class="m-3"><a href="{% url 'shop:product_add' %}">افزودن محصول جدید</a></p>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>عنوان</th>
+                <th>دسته بندی</th>
+                <th>عکس</th>
+                <th>قیمت</th>
+                <th>موجودی</th>
+                <th>حذف</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>
+                        <a href="{% url 'shop:product_edit' product.id %}">{{ product.title }}</a>
+                    </td>
+                    <td>
+                        {% if product.category %}
+                            {{ product.category }}
+                        {% else %}
+                            دسته بندی نشده
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.images.count > 0 %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#407f86" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                            </svg>
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#df1a21" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                            </svg>
+                        {% endif %}
+                    </td>
+                    <td>{{ product.price }}</td>
+                    <td>
+                        {% if product.downloadable %}
+                            <strong>∞</strong>
+                        {% else %}
+                            {% if product.stock > 0 or product.downloadable %}
+                                {{ product.stock }}
+                            {% else %}
+                                <div class="d-flex align-items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#df1a21" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                                    </svg>
+                                    <p class="ms-2 mb-0">ناموجود</p>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-btn" data-id="{{ product.id }}" data-bs-toggle="modal" data-bs-target="#deleteModal">حذف</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include "pagination.html" with page=products %}
+
+
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">حذف دسته بندی</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>آیا از حذف این  محصول اطمینان دارید؟</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <form id="deleteForm" action="" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">حذف</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            const deleteForm = document.getElementById('deleteForm');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    deleteForm.action = "{% url 'shop:product_delete' 'id' %}".replace('id', productId);
+                });
+            });
+        });
+    </script>
+{% endblock %}

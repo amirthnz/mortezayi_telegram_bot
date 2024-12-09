@@ -1,0 +1,75 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light" dir="rtl">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <img src="" alt="Logo" width="90" height="30" class="d-inline-block align-text-top">
+            <!-- You can also add text next to the logo if needed -->
+            <!-- Navbar -->
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">داشبورد</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'add_bot' %}">اتصال ربات</a>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    کاربران
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="{% url 'users' %}">مدیریت کاربران</a></li>
+                    <li><a class="dropdown-item" href="{% url 'broadcast' %}">ارسال پیام سراسری</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    مدیریت فروشگاه
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="{% url 'orders' %}">مدیریت سفارشات</a></li>
+                    <li><a class="dropdown-item" href="{% url 'cat_list' %}">مدیریت دسته بندی ها</a></li>
+                    <li><a class="dropdown-item" href="{% url 'product_list' %}">مدیریت محصولات</a></li>
+                </ul>
+            </li>
+
+
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'orders' %}">
+                    تایید پرداخت
+                    <span class="badge {% if waiting_for_review_count > 0 %} bg-warning {% else %} bg-success {% endif %} ms-1">{{ waiting_for_review_count }}</span>
+                </a>
+            </li>
+
+        </ul>
+        {% if request.user.is_authenticated %}
+            <div class="d-flex">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-danger" type="submit">خروج</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="d-flex">
+                <a class="btn btn-outline-success" href="{% url 'login' %}">ورود</a>
+            </div>
+        {% endif %}
+        </div>
+    </div>
+</nav>
+
+  <script>
+    function onMenuToggle(e) {
+        const navlinks = document.querySelector(".navLinks");
+        e.name = e.name === "menu" ? "close" : "menu";
+        navlinks.classList.toggle("right-[0%]");
+      }
+  </script>
+
+

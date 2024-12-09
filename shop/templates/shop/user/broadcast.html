@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}ارسال سراسری{% endblock %}
+
+{% block content %}
+<h1 class="mt-5 mr-5">ارسال پیام به همه کاربران ربات</h1>
+
+
+  {% if bot %}
+  <div class="min-h-screen flex justify-center">
+    <div class="p-5 my-3 bg-white shadow-gray-300 shadow-sm w-screen">
+      <form method="post" class=" grid grid-cols-1">
+        {% csrf_token %}
+        <p><label for="w3review">پیام خود را بنویسید:</label></p>
+        <p><textarea id="w3review" class="form-control" name="w3review" rows="4" cols="50"></textarea></p>
+        <p><button class="btn-primary" type="submit" value="ارسال">ارسال</button></p>
+      </form>
+    </div>
+  </div>
+  {% else %}
+      <h3>برای ارسال پیام لطفا ابتدا ربات را تعریف کنید <a href="{% url 'add_bot' %}">افزودن ربات</a> </h3>
+  {% endif %}
+
+
+{% endblock %}

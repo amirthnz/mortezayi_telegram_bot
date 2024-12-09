@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}افزودن ربات جدید{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex justify-center">
+    <div class="p-5 my-3 bg-white shadow-gray-300 shadow-sm w-screen">
+    <p class="text-right text-sm sm:text-lg">برای ثبت ربات از فرم زیر استفاده کنید</p>
+    <form method="post" enctype="multipart/form-data" class=" grid grid-cols-1">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.title }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_token">توکن ربات</label>
+        </div>
+        <div class="mb-3">
+            {{ form.token }}
+        </div>
+
+
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_shipping_price">هزینه ارسال محصولات فیزیکی</label>
+        </div>
+        <div class="mb-3">
+            {{ form.shipping_price }}
+        </div>
+
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_select_category_message">پیام انتخاب دسته بندی</label>
+        </div>
+        <div class="mb-3">
+            {{ form.select_category_message }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_back_button_text">عنوان دکمه بازگشت</label>
+        </div>
+        <div class="mb-3">
+            {{ form.back_button_text }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_select_product_message">پیام انتخاب محصول</label>
+        </div>
+        <div class="mb-3">
+            {{ form.select_product_message }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_no_product_message">پیام عدم موجودی محصول در دسته بندی</label>
+        </div>
+        <div class="mb-3">
+            {{ form.no_product_message }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_product_stock_message">پیام اتمام موجودی محصول</label>
+        </div>
+        <div class="mb-3">
+            {{ form.product_stock_message }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_card_number_text">شماره کارت</label>
+        </div>
+        <div class="mb-3">
+            {{ form.card_number_text }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_category_button_text">متن دکمه دسته بندی ها</label>
+        </div>
+        <div class="mb-3">
+            {{ form.category_button_text }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_basket_button_text">متن دکمه سبد خرید</label>
+        </div>
+        <div class="mb-3">
+            {{ form.basket_button_text }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_order_button_text">متن دکمه سفارشات</label>
+        </div>
+        <div class="mb-3">
+            {{ form.order_button_text }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_send_recipe_button_text">متن دیکمه ارسال رسید</label>
+        </div>
+        <div class="mb-3">
+            {{ form.send_recipe_button_text }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_cancel_button_text">متن دکمه لغو سفارش</label>
+        </div>
+        <div class="mb-3">
+            {{ form.cancel_button_text }}
+        </div>
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_cancel_order_message">پیام لغو شدن سفارش</label>
+        </div>
+        <div class="mb-3">
+            {{ form.cancel_order_message }}
+        </div>
+
+
+
+
+        <div class="mb-3">
+            <label class="mt-3 block text-sm font-medium text-gray-900 text-right" for="id_welcome_message">متن خوش آمدگویی ربات:</label>
+        </div>
+        <div class="mb-3">
+            {{ form.welcome_message }}
+        </div>
+
+        <div class="row">
+            <div class="col-lg-auto mb-3">
+
+                {{ form.welcome_picture }}
+            </div>
+            <div class="col-lg-auto mb-3">
+                {% if bot.welcome_picture %}
+                <h5>تصویر فعلی</h5>
+                <img class="p-2" height="100" src="{{ bot.welcome_picture.url }}" alt="welcome Image" />
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-auto">
+                <input type="submit" class="btn btn-primary" name="update_bot" value="بروزرسانی">
+            </div>
+            <div class="col-auto">
+              <a href="{% url 'dashboard' %}" class="btn btn-outline-danger">انصراف</a>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+
+{% endblock %}
+

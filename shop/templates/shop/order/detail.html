@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+{% block title %} سفارش {{order.customer.first_name}} {% endblock %}
+
+{% block content %}
+
+
+<div class="container mt-5">
+    <div class="row">
+
+        <!-- Right Column with Information -->
+        <div class="col-md-6">
+            <div class="border p-3">
+                <div class="row">
+                    <div>
+                        <p>نام مشتری: <strong>{{ order.customer.first_name }} {% if order.customer.last_name %}{{order.customer.last_name}}{% endif %}</strong></p>
+                        <p>آیدی کاربر<strong>{% if order.customer.username %}<a href="https://t.me/{{order.customer.username}}">{{order.customer.username}}</a>{% endif %}</strong></p>
+                        <p>نشانی کاربر:</p>
+                        {% if order.shipping_address %}
+                            <strong>
+                                <p>استان: {{ order.shipping_address.state }}</p>
+                                <p>شهر: {{ order.shipping_address.city }}</p>
+                                <p>آدرس: {{ order.shipping_address.street }}، {{ order.shipping_address.neighborhood }}، پلاک {{ order.shipping_address.plate }}، واحد {{ order.shipping_address.unit }}</p>
+                            </strong>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if order.photo %}
+                            <img src="{{ order.photo.url }}" alt="Image from user" style="max-width: 300px; max-height: 300px;">
+                        {% else %}
+                            رسید پرداخت ارسال نشده
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Left Column with Table -->
+        <div class="col-md-6">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>نام محصول</th>
+                        <th>تعداد</th>
+                        <th>نوع محصول</th>
+                        <th>قیمت تک</th>
+                        <th>قیمت مجموع</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                        <tr>
+                            <td>{{item.product}}</td>
+                            <td>{{item.quantity}}</td>
+                            <td>{% if item.product.downloadable %}دیجیتالی{% else %}فیزیکی{% endif %}</td>
+                            <td>{{item.product.price}}</td>
+                            <td>{{ item.product.price|multiply:item.quantity }}</td>
+                        </tr>
+                    {% endfor %}
+                    {% if form %}
+                        <tr>
+                            <td>هزینه ارسال</td>
+                            <td>{{ shipping_price }}</td>
+                        </tr>
+                    {% endif %}
+
+                    <tr>
+                        <td>جمع کل</td>
+                        <td>{{total_price}}  تومان </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="d-flex">
+                <button class="btn btn-warning btn-sm change-status-btn me-2" data-order-id="{{ order.id }}" data-status="{{ order.status }}" data-bs-toggle="modal" data-bs-target="#statusModal">
+                    {% if order.status == 'complete' %}
+                        تکمیل شده
+                    {% elif order.status == 'pending' %}
+                        انتظار
+                    {% elif order.status == 'wait_for_pay' %}
+                        پرداخت نشده
+                    {% elif order.status == 'wait_for_review' %}
+                        در انتظار تایید پرداخت
+                    {% else %}
+                        وضعیت نامشخص
+                    {% endif %}
+                </button>
+                <button class="btn btn-danger btn-sm delete-btn" data-id="{{ order.id }}" data-bs-toggle="modal" data-bs-target="#deleteModal">حذف</button>
+            </div>
+
+            {% if form %}
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-outline-success" type="submit">ثبت و ارسال کد</button>
+            </form>
+            {% endif %}
+        </div>
+
+
+
+        <!-- Status Change Modal -->
+        <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">تغییر وضعیت سفارش</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="statusChangeForm" action="{% url 'shop:your_status_change_url' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="order_id" id="order-id" value="">
+                            <div class="mb-3">
+                                <label for="status" class="form-label">وضعیت جدید</label>
+                                <select name="status" id="status" class="form-select">
+                                    <option value="pending">انتظار</option>
+                                    <option value="wait_for_pay">پرداخت نشده</option>
+                                    <option value="complete">تکمیل شده</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">تغییر وضعیت</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">حذف دسته بندی</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>آیا از حذف این سفارش اطمینان دارید؟</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                        <form id="deleteForm" action="" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">حذف</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    // JavaScript to handle the status change modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+            const deleteForm = document.getElementById('deleteForm');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const categoryId = this.getAttribute('data-id');
+                    deleteForm.action = "{% url 'shop:order_delete' 'id' %}".replace('id', categoryId);
+                });
+            });
+
+
+        const statusChangeButtons = document.querySelectorAll('.change-status-btn');
+
+        // Function to set button class based on status
+        function setButtonClass(button) {
+            const status = button.getAttribute('data-status');
+            const statusChangeButton = document.getElementById('statusChangeButton');
+
+            if (status === 'complete') {
+                button.classList.remove('btn-warning');
+                button.classList.add('btn-success');
+            } else {
+                button.classList.remove('btn-success');
+                button.classList.add('btn-warning');
+            }
+        }
+
+        // Set button classes on page load
+        statusChangeButtons.forEach(button => {
+            setButtonClass(button);
+        });
+
+        statusChangeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const orderId = this.getAttribute('data-order-id');
+                document.getElementById('order-id').value = orderId;
+
+                // Reset button class to warning when modal opens
+                const statusChangeButton = document.getElementById('statusChangeButton');
+                statusChangeButton.classList.remove('btn-success');
+                statusChangeButton.classList.add('btn-warning');
+
+                // Reset the dropdown to its default value (optional)
+                const statusSelect = document.getElementById('status');
+                statusSelect.value = 'pending'; // Set to default if needed
+            });
+        });
+
+        // Ensure that the status select is available
+        const statusSelect = document.getElementById('status');
+
+        // Add event listener to the status select only if it exists
+        if (statusSelect) {
+            statusSelect.addEventListener('change', function() {
+                const statusChangeButton = document.getElementById('statusChangeButton');
+                if (this.value === 'complete') {
+                    statusChangeButton.classList.remove('btn-warning');
+                    statusChangeButton.classList.add('btn-success');
+                } else {
+                    statusChangeButton.classList.remove('btn-success');
+                    statusChangeButton.classList.add('btn-warning');
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}
+
+
+
+<h3><a href="">بازگشت</a></h3>
+    <hr>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>نام مشتری</th>
+                <th>تعداد محصولات</th>
+                <th>وضعیت</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td>{{ order.items.count }}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm change-status-btn" data-order-id="{{ order.id }}" data-status="{{ order.status }}" data-bs-toggle="modal" data-bs-target="#statusModal">
+                        {% if order.status == 'complete' %}
+                            تکمیل شده
+                        {% elif order.status == 'pending' %}
+                            انتظار
+                        {% elif order.status == 'wait_for_pay' %}
+                            پرداخت نشده
+                        {% elif order.status == 'wait_for_review' %}
+                            در انتظار تایید پرداخت
+                        {% else %}
+                            وضعیت نامشخص
+                        {% endif %}
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <!-- Status Change Modal -->
+    <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تغییر وضعیت سفارش</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="statusChangeForm" action="{% url 'shop:your_status_change_url' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_id" id="order-id" value="">
+                        <div class="mb-3">
+                            <label for="status" class="form-label">وضعیت جدید</label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="pending">انتظار</option>
+                                <option value="wait_for_pay">پرداخت نشده</option>
+                                <option value="complete">تکمیل شده</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">تغییر وضعیت</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>

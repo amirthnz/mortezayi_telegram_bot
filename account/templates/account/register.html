@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}افزودن کاربر جدید{% endblock %}
+
+{% block content %}
+
+  <div class="p-5">
+    <div class="p-5 my-3 bg-white shadow-gray-300 shadow-sm relative w-72 sm:w-96 lg:w-96">
+      <p class="text-right text-sm sm:text-lg">لطفا از فرم زیر برای افزودن کاربر جدید استفاده کنید</p>
+      <form method="post"  class=" grid grid-cols-1">
+
+        {% csrf_token %}
+        <div class="mb-3">
+          <input type="text" class="form-control" placeholder="نام کاربری" name="username" maxlength="150" required id="id_username">
+        </div>
+
+        <p>150 کاراکتر یا کمتر. فقط شامل حروف، اعداد، و علامات @/./+/-/_</p>
+
+        <div class="mb-3">
+          <input type="text" class="form-control" placeholder="نام" name="first_name" maxlength="150" id="id_first_name">
+        </div>
+
+        <div class="mb-3">
+          <input type="text" class="form-control" placeholder="نام خانوادگی" name="last_name" maxlength="150" id="id_last_name">
+        </div>
+
+        <div class="mb-3">
+          <input type="email" class="form-control" placeholder="ایمیل" name="email" maxlength="254" id="id_email">
+        </div>
+
+
+        <div class="row">
+          <div class="col-lg-auto mb-3">
+            <input type="password" class="form-control" placeholder="رمز عبور جدید" name="password" required id="id_password" />
+          </div>
+          <div class="col-lg-auto mb-3">
+            <input type="password" class="form-control" placeholder="تکرار رمز عبور" name="password2" required id="id_password2" />
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary">ثبت نام کاربر</button>
+          </div>
+          <div class="col-auto">
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-danger">انصراف</a>
+          </div>
+        </div>
+
+
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+
+<div class="mb-3">
+  <input type="text" name="first_name" class="form-control" placeholder="نام" id="name-input" maxlength="150">
+</div>
+<div class="mb-3">
+  <input type="text" name="last_name" class="form-control" placeholder="نام خانوادگی" id="name-input" maxlength="150">
+</div>
+<div class="mb-3">
+  <input type="email" name="email" value="amirthn95@gmail.com" class="form-control" placeholder="ایمیل خود را وارد کنید" id="email-input" maxlength="254">
+</div>
+
+<div class="row g-3">
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+  </div>
+  <div class="col-auto">
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-danger">انصراف</a>
+  </div>
+</div>

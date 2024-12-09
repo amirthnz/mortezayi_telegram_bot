@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}خارج شدید{% endblock %}
+
+{% block content %}
+  <h1>خروج</h1>
+  <hr>
+  <p>
+    با موفقیت از حساب خارج شدید.
+    می توانید دوباره  <a href="{% url 'login' %}" class="text-link"> وارد</a>شوید.
+  </p>
+{% endblock %}

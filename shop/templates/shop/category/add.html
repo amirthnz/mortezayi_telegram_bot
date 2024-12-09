@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %} افزودن دسته بندی {% endblock %}
+
+{% block content %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="row g-3">
+            <div class="col-auto">
+                <button class="btn btn-primary" type="submit">ذخیره</button>
+            </div>
+            <div class="col-auto">
+              <a href="{% url 'shop:cat_list' %}" class="btn btn-outline-danger">انصراف</a>
+            </div>
+        </div>
+
+    </form>
+
+{% endblock %}

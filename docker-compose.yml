@@ -1,0 +1,71 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        - dev=true
+    command: gunicorn config.wsgi:application --workers 3 --bind 0.0.0.0:8000
+    restart: always
+    volumes:
+      - ./:/app # This makes it so everything in app dir on container and on my machine to copy each other
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    networks:
+      - main_network
+
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - dev_db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=devdb
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=changeme
+    networks:
+      - main_network
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email amirthn95@gmail.com -d majidmoreshop.ir --agree-tos
+    depends_on:
+      - nginx
+
+  nginx:
+    container_name: nginx
+    image: nginx:1.25.3-alpine
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./data/nginx/nginx.dev.conf:/etc/nginx/nginx.conf
+      - static_volume:/app/static
+      - media_volume:/app/media
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - main_network
+
+volumes:
+  dev_db_data:
+  static_volume:
+  media_volume:
+  certbot_www_volume:
+  certbot_certs_volume:
+  proxy_dhparams:
+
+
+networks:
+  main_network:

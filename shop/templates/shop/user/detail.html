@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{user.first_name}}{% endblock %}
+
+{% block content %}
+    <div class="mt-4">
+        <div class="row">
+            <div class="col-auto m-3">
+                <p class="text-right">آیدی کاربر: <a href="https:t.me/{{ user.username }}">{{ user.username }}</a></p>
+                <h6 class="text-right">نام کاربر: {{user.first_name}} {% if user.last_name %}{{user.last_name}} {% endif %}</h6>
+            </div>
+            {% if user.phone_number %}
+                <div class="col-auto m-3">
+                    <h6 class="text-right">تلفن کاربر: {{user.phone_number}}</h6>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if bot %}
+            <div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div>
+                        <label for="product-details" class="text-sm font-medium text-gray-900 block mb-2">متن پیام</label>
+                        <textarea id="w3review" rows="6" name="w3review" class="form-control mb-3"></textarea>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-auto">
+                            <button class="btn btn-primary" type="submit" name="send_message" value="ارسال">ارسال</button>
+                        </div>
+                        <div class="col-auto">
+                          <a href="{% url 'shop:users' %}" class="btn btn-outline-danger">انصراف</a>
+                        </div>
+                    </div>
+
+
+
+                </form>
+            </div>
+        {% else %}
+            <h3>برای ارسال پیام لطفا ابتدا ربات را تعریف کنید <a href="{% url 'core:add_bot' %}">افزودن ربات</a> </h3>
+
+        {% endif %}
+    </div>
+
+    <script>
+        const textarea = document.getElementById('w3review');
+        const emojiBtn = document.querySelector('.emoji-btn');
+        const emojiPicker = document.querySelector('.emoji-picker');
+        let isOpen = false;
+
+        emojiBtn.addEventListener('click', () => {
+            emojiPicker.classList.toggle('hidden');
+        });
+
+        emojiPicker.addEventListener('click', (e) => {
+          if (e.target.tagName === 'SPAN') {
+            const emoji = e.target.textContent;
+            const cursorPosition = textarea.selectionStart;
+            const text = textarea.value;
+            const newText = text.substring(0, cursorPosition) + emoji + text.substring(cursorPosition);
+            textarea.value = newText;
+            emojiPicker.classList.remove('hidden');
+          }
+        });
+    </script>
+
+{% endblock %}
+

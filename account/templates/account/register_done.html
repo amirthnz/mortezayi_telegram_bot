@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}کاربر ایجاد شد{% endblock %}
+
+{% block content %}
+  <h1>Welcome {{ new_user.first_name }}!</h1>
+  <p>
+    New account has been created
+  </p>
+  <p>
+    <a href="{% url 'dashboard' %}">Back</a>
+  </p>
+{% endblock %}
